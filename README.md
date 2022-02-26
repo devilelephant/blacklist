@@ -2,21 +2,16 @@ Setup
 =====
 Requires JDK 11 
 
-**Credentials**
+**AWS Credentials**
 
-add an `[ipcheck]` section to your ~/.aws/credentials file
+AWS credentials required either at `.aws` or environment.
 
-```text
-[ipcheck]
-aws_default_region = <REGION>
-aws_access_key_id = <KEY>
-aws_secret_access_key = <SECRET>
-```
-
-Build
+Build and Run Local
 =====
-
-    mvn install
+```text
+mvn install
+mvn spring-boot:run -Dspring.boot.run.profiles=local
+```
 
 Test
 ====
@@ -28,9 +23,32 @@ http://localhost:8080/actuator/health
 http://localhost:8080/actuator/metrics
 ```
 
-IP Check endpoint
+Reload Lists
+---
 ```text
-http://localhost:8080/ipcheck/<IPv4 ip>
+curl -i -X POST localhost:8080/blacklist/api/reload
+```
 
-http://localhost:8080/ipcheck/255.0.0.0
+IP Check endpoint
+----
+IP Not Found (not blocked)
+```text
+curl -i localhost:8080/blacklist/api?ip=1.2.3.4
+
+HTTP/1.1 404
+Content-Type: application/json
+Content-Length: 28
+Date: Sat, 26 Feb 2022 19:17:52 GMT
+
+{"result":"","ip":"1.2.3.4"}
+```
+IP Found (should be blocked)
+```text
+curl -i localhost:8080/blacklist/api\?ip=222.122.209.102                                                                                      master ◼
+HTTP/1.1 200
+Content-Type: application/json
+Content-Length: 51
+Date: Sat, 26 Feb 2022 19:26:53 GMT
+
+{"ip":"222.122.209.102","result":"222.122.209.102"}%
 ```

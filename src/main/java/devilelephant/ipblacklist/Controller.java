@@ -48,7 +48,7 @@ public class Controller {
   }
 
   // TODO: create some cron job to fire this automatically
-  @PostMapping(path = "/ipcheck/reload")
+  @PostMapping(path = "/blacklist/api/reload")
   public ResponseEntity<String> refreshIps() {
     try {
       if (lock.tryLock()) {
@@ -64,7 +64,7 @@ public class Controller {
 
   @SneakyThrows
   @GetMapping(
-      path = "/ipcheck",
+      path = "/blacklist/api",
       produces = {MediaType.APPLICATION_JSON_VALUE}
   )
   public ResponseEntity<String> ipCheck(@RequestParam(name = "ip") final String ip) {
@@ -78,7 +78,7 @@ public class Controller {
 
       return new ResponseEntity<>(output, result.isEmpty() ? HttpStatus.NOT_FOUND : HttpStatus.OK);
     } catch (IllegalArgumentException | JsonProcessingException e) {
-      var output = mapper.writeValueAsString(Map.of("ip", ip == null || ip.isEmpty() ? "<missing>" : ip, "result", e.getMessage()));
+      var output = mapper.writeValueAsString( Map.of("ip", ip == null || ip.isEmpty() ? "<missing>" : ip, "result", e.getMessage()));
       return new ResponseEntity<>(output, HttpStatus.BAD_REQUEST);
     }
   }
