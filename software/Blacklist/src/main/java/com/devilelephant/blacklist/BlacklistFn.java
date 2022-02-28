@@ -8,8 +8,8 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,7 +26,7 @@ public class BlacklistFn implements RequestHandler<APIGatewayProxyRequestEvent, 
 
   public static final String MOUNT_PATH = "/mnt/msg";
   public static final Path BLOCK_FILE_PATH = Path.of(MOUNT_PATH, "blocked_ips.txt");
-  public static final Gson GSON = new Gson();
+  public static final ObjectMapper mapper = new ObjectMapper();
 
   private IpTree tree;
   private Instant fileLastModified;
@@ -51,16 +51,13 @@ public class BlacklistFn implements RequestHandler<APIGatewayProxyRequestEvent, 
       }
       var ip = input.getQueryStringParameters().get("ip");
       checkIp(ip, response, log);
-    } catch (JsonSyntaxException e) {
-      response
-          .withBody(GSON.toJson(Map.of("input", input.getBody(), "invalid config", e.getMessage())))
-          .withStatusCode(400);
     } catch (Exception e) {
       log.log(format("ERROR message=%s", e.getMessage()));
       return response
-          .withBody(GSON.toJson(Map.of("error", e.getMessage())))
+          .withBody(toJson(Map.of("error", e.getMessage())))
           .withStatusCode(500);
     }
+
     log.log(format("response code=%d, body=%s", response.getStatusCode(), response.getBody()));
     return response;
   }
@@ -79,18 +76,26 @@ public class BlacklistFn implements RequestHandler<APIGatewayProxyRequestEvent, 
       log.log("missing query parameter 'ip'");
       response
           .withStatusCode(400)
-          .withBody(GSON.toJson(Map.of("error", "missing query parameter 'ip'")));
+          .withBody(toJson(Map.of("error", "missing query parameter 'ip'")));
     } else {
       var resp = tree.find(ip);
       if (resp.isEmpty()) {
         response
             .withStatusCode(404)
-            .withBody(GSON.toJson(Map.of("ip", ip, "block", "")));
+            .withBody(toJson(Map.of("ip", ip, "block", "")));
       } else {
         response
             .withStatusCode(200)
-            .withBody(GSON.toJson(Map.of("ip", ip, "block", resp)));
+            .withBody(toJson(Map.of("ip", ip, "block", resp)));
       }
+    }
+  }
+
+  String toJson(Map<String, String> map) {
+    try {
+      return mapper.writeValueAsString(map);
+    } catch (JsonProcessingException e) {
+      return "{" + map.entrySet() + "}";
     }
   }
 }
