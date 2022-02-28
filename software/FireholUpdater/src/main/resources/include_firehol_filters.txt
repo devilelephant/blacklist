@@ -1,0 +1,14 @@
+# add firehol included name prefixes here
+# implied .* appended to each for matching
+feodo
+palevo
+sslbl
+iblocklist_abuse_zeus
+zeus
+zeus_badips
+dshield
+spamhaus_drop
+spamhaus_edrop
+fullbogons
+openbl
+blocklist_de
