@@ -27,6 +27,9 @@ import software.amazon.awscdk.services.efs.AccessPointOptions;
 import software.amazon.awscdk.services.efs.Acl;
 import software.amazon.awscdk.services.efs.FileSystem;
 import software.amazon.awscdk.services.efs.PosixUser;
+import software.amazon.awscdk.services.events.Rule;
+import software.amazon.awscdk.services.events.Schedule;
+import software.amazon.awscdk.services.events.targets.LambdaFunction;
 import software.amazon.awscdk.services.lambda.Code;
 import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.FunctionProps;
@@ -96,7 +99,7 @@ public class CdkStack extends Stack {
                 ))
                 .build())
             .build()))
-        .handler("com.devilelephant.blacklist.IpCheckFn")
+        .handler("com.devilelephant.ipcheck.IpCheckFn")
         .memorySize(512)
         .timeout(Duration.seconds(30))
         .vpc(vpc)
@@ -117,7 +120,7 @@ public class CdkStack extends Stack {
             .build()))
         .build());
 
-    new Function(this, "FireholUpdater", FunctionProps.builder()
+    var fireholUpdaterFn = new Function(this, "FireholUpdater", FunctionProps.builder()
         .runtime(Runtime.JAVA_11)
         .code(Code.fromAsset("../software/", AssetOptions.builder()
             .bundling(builderOptions
@@ -140,5 +143,13 @@ public class CdkStack extends Stack {
         .description("Url for Http Api")
         .value(httpApi.getApiEndpoint())
         .build());
+
+    // Create EventBridge rule that will execute our Lambda every hour
+    Rule ruleScheduled = Rule.Builder.create(this, "fireholUpdaterLambda")
+        .schedule(Schedule.rate(Duration.hours(1)))
+        .build();
+
+    // Set the target of our EventBridge rule to our Lambda function
+    ruleScheduled.addTarget(new LambdaFunction(fireholUpdaterFn));
   }
 }
