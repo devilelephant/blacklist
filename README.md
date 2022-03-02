@@ -9,7 +9,7 @@ Create a cloud native service in AWS:
 ## Project structure
     
     ├── cdk                 # AWS CDK Infrastructure Code
-    ├── software            # Lambda Function Implementations
+    └── software            # Lambda Function Implementations
         ├── fireholupdater  # Refreshes the firehol IP list
         └── ipcheck         # REST endpoint that performs the check
 
