@@ -112,12 +112,12 @@ public class CdkStack extends Stack {
         .build());
 
     // API Gateway Definition and IP Check Routing
-    var httpApi = new HttpApi(this, "blacklist-api", HttpApiProps.builder()
-        .apiName("blacklist-api")
+    var httpApi = new HttpApi(this, "blocklist-api", HttpApiProps.builder()
+        .apiName("blocklist-api")
         .build());
 
     httpApi.addRoutes(AddRoutesOptions.builder()
-        .path("/blacklist")
+        .path("/blocklist")
         .methods(singletonList(HttpMethod.GET))
         .integration(new LambdaProxyIntegration(LambdaProxyIntegrationProps.builder()
             .handler(ipCheckFunction)

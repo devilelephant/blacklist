@@ -3,7 +3,7 @@
 ## Purpose
 This function's responsibility is to download the latest updates from 
 the [Firehol repo](https://github.com/firehol/blocklist-ipsets) on GitHub and then create a
-consolidated file output file of black-listed IPs for the `IP Check` lambda.
+consolidated file output file of block-listed IPs for the `IP Check` lambda.
 
 ## Process 
 ![image info](./firehol_updater_sequence.png)

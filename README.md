@@ -1,9 +1,9 @@
-# Blacklist - IP Blocking Service
+# Blocklist - IP Blocking Service
 
 ## Goals
 Create a cloud native service in AWS:
 * REST endpoint to check if a given IP should be blocked
-* Auto-updating blacklisted IP service
+* Auto-updating blocked IP service
   * Load a configured set of sources from the [Firehol repo](https://github.com/firehol/blocklist-ipsets) on GitHub
 
 ## Project structure
@@ -45,19 +45,19 @@ Example:
     cdk synth
 ```
 
-- Deploy blacklist on AWS
+- Deploy on AWS
 ```bash
     cdk deploy --profile default 
 ```
 _Here we're using the `[default]` aws creds profile from `~/.aws/config` from the prerequisites section_
 
 You'll be asked to confirm the deploy.  Then take a nice :coffee: break while CDK creates an AWS Stack
-(BlacklistStack) with all required components, configuration, and dependencies. (~10 mins)
+(BlocklistStack) with all required components, configuration, and dependencies. (~10 mins)
 
 When finished take note of the `Outputs` section:
 ```bash
 Outputs:
-BlacklistStack.HttApi = https://<prefix>.execute-api.us-east-1.amazonaws.com
+BlocklistStack.HttApi = https://<prefix>.execute-api.us-east-1.amazonaws.com
 ```
 _Your url will have a different hash prefix_
 
@@ -71,11 +71,11 @@ the AWS console, go to Lambdas, find the `fireholdupdater` lambda and test it di
 
 Otherwise you can trigger it via the AWS CLI with something like this: 
 ```text
-# list your lambdas and find the one whose name starts with "BlacklistStack-FireholUpdater..."
+# list your lambdas and find the one whose name starts with "BlocklistStack-FireholUpdater..."
 aws lambda list-functions
 
 # use that name to trigger the lambda directly
-aws lambda invoke --function-name BlacklistStack-FireholUpdater65549623-wo4z3z7wBhNp --payload '{}' response.json
+aws lambda invoke --function-name BlocklistStack-FireholUpdater65549623-wo4z3z7wBhNp --payload '{}' response.json
 ```
 ### Checking IPs
 Using the URL from the Outputs section above, we can start testing IPs:
@@ -86,7 +86,7 @@ be included from the firehol list_
 #### IP Blocked Example - returns 200 since it was found in the list
 Note the "block" in the JSON response shows which IP block rule blocked the tested ip.
 ```bash
-curl -i 'https://<prefix>.execute-api.us-east-1.amazonaws.com/blacklist?ip=24.236.0.0'
+curl -i 'https://<prefix>.execute-api.us-east-1.amazonaws.com/blocklist?ip=24.236.0.0'
 HTTP/2 200
 date: Wed, 02 Mar 2022 02:34:16 GMT
 content-type: application/json
@@ -98,7 +98,7 @@ apigw-requestid: OVaiUikooAMESMw=
 ```
 #### IP Not Blocked Example - returns 404 not found
 ```bash
-curl -i 'https://<prefix>.execute-api.us-east-1.amazonaws.com/blacklist?ip=1.2.0.0'                                                                                                                                                                                                                                                              main ✚ ✱ ◼
+curl -i 'https://<prefix>.execute-api.us-east-1.amazonaws.com/blocklist?ip=1.2.0.0'                                                                                                                                                                                                                                                              main ✚ ✱ ◼
 HTTP/2 404
 date: Wed, 02 Mar 2022 02:37:59 GMT
 content-type: application/json
@@ -110,7 +110,7 @@ apigw-requestid: OVbFQg-JoAMEStA=
 ```
 
 ## Clean up
-Once you're done with BlackList tear the entire thing down to remove it from your AWS account:
+Once you're done with BlockList tear the entire thing down to remove it from your AWS account:
 
 ```bash
 cdk destroy --profile default
