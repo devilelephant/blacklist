@@ -60,7 +60,7 @@ public class CdkStack extends Stack {
         .removalPolicy(RemovalPolicy.DESTROY)
         .build();
 
-    // Create a access point to EFS
+    // Create am access point to EFS
     AccessPoint accessPoint = fileSystem.addAccessPoint("AccessPoint",
         AccessPointOptions.builder()
             .createAcl(
@@ -76,6 +76,7 @@ public class CdkStack extends Stack {
                     .build())
             .build());
 
+    // Shared java/maven lambda building options
     var builderOptions = BundlingOptions.builder()
         .image(Runtime.JAVA_11.getBundlingImage())
         .volumes(singletonList(
@@ -88,7 +89,8 @@ public class CdkStack extends Stack {
         .user("root")
         .outputType(ARCHIVED);
 
-    var blacklistFn = new Function(this, "IpCheck", FunctionProps.builder()
+    // IP Check Lambda
+    var ipCheckFunction = new Function(this, "IpCheck", FunctionProps.builder()
         .runtime(Runtime.JAVA_11)
         .code(Code.fromAsset("../software/", AssetOptions.builder()
             .bundling(builderOptions
@@ -107,6 +109,7 @@ public class CdkStack extends Stack {
         .logRetention(RetentionDays.ONE_WEEK)
         .build());
 
+    // API Gateway Definition and IP Check Routing
     var httpApi = new HttpApi(this, "blacklist-api", HttpApiProps.builder()
         .apiName("blacklist-api")
         .build());
@@ -115,11 +118,12 @@ public class CdkStack extends Stack {
         .path("/blacklist")
         .methods(singletonList(HttpMethod.GET))
         .integration(new LambdaProxyIntegration(LambdaProxyIntegrationProps.builder()
-            .handler(blacklistFn)
+            .handler(ipCheckFunction)
             .payloadFormatVersion(PayloadFormatVersion.VERSION_2_0)
             .build()))
         .build());
 
+    // Firehol Updater Lambda
     var fireholUpdaterFn = new Function(this, "FireholUpdater", FunctionProps.builder()
         .runtime(Runtime.JAVA_11)
         .code(Code.fromAsset("../software/", AssetOptions.builder()
@@ -139,12 +143,13 @@ public class CdkStack extends Stack {
         .logRetention(RetentionDays.ONE_WEEK)
         .build());
 
+    // Output the URL to API Gateway Endpoint
     new CfnOutput(this, "HttApi", CfnOutputProps.builder()
         .description("Url for Http Api")
         .value(httpApi.getApiEndpoint())
         .build());
 
-    // Create EventBridge rule that will execute our Lambda every hour
+    // EventBridge Rule Definition and Targeting Firehol Update Lambda
     Rule ruleScheduled = Rule.Builder.create(this, "triggerFireholUpdater")
         .schedule(Schedule.rate(Duration.hours(1)))
         .build();
