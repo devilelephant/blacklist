@@ -1,4 +1,4 @@
-#Firehol Updater Lambda
+# Firehol Updater Lambda
 
 ## Purpose
 This function's responsibility is to download the latest updates from 

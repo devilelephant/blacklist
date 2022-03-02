@@ -1,6 +1,6 @@
-#IP Check Lambda
+# IP Check Lambda
 
-##Purpose
+## Purpose
 This function loads the most recent file from EFS mount `/mnt/firehol/blocked_ips.txt`
 and parses it into a [Radix Tree](https://en.wikipedia.org/wiki/Radix_tree), which offers
 very fast lookups.
