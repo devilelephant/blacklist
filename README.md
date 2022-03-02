@@ -17,11 +17,9 @@ Create a cloud native service in AWS:
 ![image info](./architecture.png)
 
 ### Description
-On deploy an EventBridge rule should trigger the `fireholupater` lambda.
-This function is responsible for downloading the latest changes from the firehol ipsets and then
-creating a consolidated file that includes any 
-
-
+See each function's README for details:
+* [Firehol Updater](./software/fireholupdater/README.md)
+* [IP Check](./software/ipcheck/README.md)
 
 ## Prerequisites
 - [AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html) 

@@ -113,9 +113,11 @@ public class FireholUpdaterFn implements RequestHandler<ScheduledEvent, Void> {
         try (var reader = newBufferedReader(path)) {
           String line = reader.readLine();
           while (line != null) {
-            // write to the output file
-            writer.write(line);
-            writer.newLine();
+            // write to the output file, exclude comments
+            if (!line.startsWith("#")) {
+              writer.write(line);
+              writer.newLine();
+            }
             line = reader.readLine();
           }
           writer.flush();
