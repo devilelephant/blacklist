@@ -34,6 +34,7 @@ import software.amazon.awscdk.services.lambda.Code;
 import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.FunctionProps;
 import software.amazon.awscdk.services.lambda.Runtime;
+import software.amazon.awscdk.services.lambda.Tracing;
 import software.amazon.awscdk.services.logs.RetentionDays;
 import software.amazon.awscdk.services.s3.assets.AssetOptions;
 
@@ -107,6 +108,7 @@ public class CdkStack extends Stack {
         .vpc(vpc)
         .filesystem(fromEfsAccessPoint(accessPoint, MOUNT_PATH))
         .logRetention(RetentionDays.ONE_WEEK)
+        .tracing(Tracing.ACTIVE)
         .build());
 
     // API Gateway Definition and IP Check Routing
@@ -141,6 +143,7 @@ public class CdkStack extends Stack {
         .vpc(vpc)
         .filesystem(software.amazon.awscdk.services.lambda.FileSystem.fromEfsAccessPoint(accessPoint, MOUNT_PATH))
         .logRetention(RetentionDays.ONE_WEEK)
+        .tracing(Tracing.ACTIVE)
         .build());
 
     // Output the URL to API Gateway Endpoint
