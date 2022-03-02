@@ -31,7 +31,7 @@ public class FireholUpdaterFn implements RequestHandler<ScheduledEvent, Void> {
 
   public static final String FIREHOL_GITHUB_REPO = "https://github.com/firehol/blocklist-ipsets";
   public static final int MAX_REPO_WALK_DEPTH = 10;
-  public static final String MOUNT_PATH = "/mnt/msg";
+  public static final String MOUNT_PATH = "/mnt/firehol";
   public static final Path REPO_PATH = Path.of(MOUNT_PATH, "firehol");
   public static final String INCLUDE_FILTERS = "include_firehol_filters.txt";
   public static final Path BLOCK_FILE_PATH = Path.of(MOUNT_PATH, "blocked_ips.txt");

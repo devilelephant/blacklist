@@ -24,7 +24,7 @@ import software.amazon.lambda.powertools.tracing.Tracing;
  */
 public class IpCheckFn implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-  public static final String MOUNT_PATH = "/mnt/msg";
+  public static final String MOUNT_PATH = "/mnt/firehol";
   public static final Path BLOCK_FILE_PATH = Path.of(MOUNT_PATH, "blocked_ips.txt");
   public static final ObjectMapper mapper = new ObjectMapper();
 

@@ -40,7 +40,7 @@ import software.amazon.awscdk.services.s3.assets.AssetOptions;
 public class CdkStack extends Stack {
 
   // per docs must start with "/mnt"
-  public static final String MOUNT_PATH = "/mnt/msg";
+  public static final String MOUNT_PATH = "/mnt/firehol";
 
   public CdkStack(final Construct parent, final String id) {
     this(parent, id, null);
@@ -145,7 +145,7 @@ public class CdkStack extends Stack {
         .build());
 
     // Create EventBridge rule that will execute our Lambda every hour
-    Rule ruleScheduled = Rule.Builder.create(this, "fireholUpdaterLambda")
+    Rule ruleScheduled = Rule.Builder.create(this, "triggerFireholUpdater")
         .schedule(Schedule.rate(Duration.hours(1)))
         .build();
 
